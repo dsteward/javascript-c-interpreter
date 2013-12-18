@@ -54,7 +54,7 @@ define(function() {
 
 	var states = {
 		readString: function(source, index, length, tokens){
-			var end = index++;
+			var end = index+1;
 
 			while(end < length && source[end] !== '"') {
 				end++;
@@ -104,16 +104,16 @@ define(function() {
 		},
 		readToken: function(source, index, length, tokens) {
 			if (source[index].match(wordRegExp))
-				return readWord(source, index,)
+				return states.readWord(source, index,length, tokens);
 			
 			if (source[index] === '"')
-				return readString(source, index, length, tokens);
+				return states.readString(source, index, length, tokens);
 
-			return readSymbol(source, index, length, tokens);
+			return states.readSymbol(source, index, length, tokens);
 		},
 		readWhitespace: function(source, index, length, tokens) {
 			var end = index;
-			while(end < length && (source[end]!==' ' || source[end]!=='\n' || source[end]!=='\r' || source[end]!=='\t') {
+			while(end < length && (source[end]===' ' || source[end]==='\n' || source[end]==='\r' || source[end]==='\t')) {
 				end++;
 			}
 
@@ -122,11 +122,11 @@ define(function() {
 		intial: function(source) {
 			var tokens = [];
 			var length = source.length;
-			var index = readWhitespace(source, index, length, tokens);
+			var index = states.readWhitespace(source, 0, length, tokens);
 
 			while(index < length) {
-				index = readToken(source, index, length, tokens);
-				index = readWhitespace(source, index, length, tokens);
+				index = states.readToken(source, index, length, tokens);
+				index = states.readWhitespace(source, index, length, tokens);
 			}
 
 			return tokens;
