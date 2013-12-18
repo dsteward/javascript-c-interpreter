@@ -33,6 +33,10 @@ define(function() {
 		{symbol: '>>=', token: 'T_BITWISE_RIGHT_SHIFT_ASSIGNMENT'},
 	];
 
+	var keywords = {
+		'void': 'T_TYPE_VOID'
+	};
+
 	var sortedSymbols = symbols.map(function(item) {
 		item.symbolLength = item.symbol.length;
 		return item;
@@ -44,12 +48,9 @@ define(function() {
 		return 0;
 	});
 
-	var exampleCProgram = 'main(){printf("Hello World");}';
-
-
 	var alphanumericRegExp = /[a-zA-Z0-9]+/;
 	var numericRegExp = /[0-9]+/;
-	var wordRegExp = /[a-zA-Z_][a-zA-Z0-9_]*/;
+	var wordRegExp = /^[a-zA-Z_][a-zA-Z0-9_]*/;
 
 	var states = {
 		readString: function(source, index, length, tokens){
@@ -58,11 +59,29 @@ define(function() {
 			while(end < length && source[end] !== '"') {
 				end++;
 			}
+
+			tokens.push({
+				type: "T_STRING",
+				value: source.slice(index, end+1)
+			});
 			
-			return end;
+			return end+1;
 		},
 		readWord: function(source, index, length, tokens) {
-			//TODO
+			var remainingSource = source.slice(index, length);
+			var match = remainingSource.match(wordRegExp);
+
+			if (match==null)
+				throw new Exception("No word found");
+
+			var keyword = keywords[match[0]];
+
+			tokens.push({
+				type: keyword == null ? "T_IDENTIFIER" : keyword,
+				value: keyword == null ? match : undefined
+			});
+
+			return index + match[0].length;
 		},
 		readSymbol: function(source, index, length, tokens) {
 			var result = null;
@@ -115,6 +134,6 @@ define(function() {
 	};
 
 	return function(source) {
-
+		return states.intial(source);
 	};
 });
