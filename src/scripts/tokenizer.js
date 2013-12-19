@@ -34,7 +34,8 @@ define(function() {
 	];
 
 	var keywords = {
-		'void': 'T_TYPE_VOID'
+		'void': 'T_TYPE_VOID',
+		'int': 'T_TYPE_INT'
 	};
 
 	var sortedSymbols = symbols.map(function(item) {
@@ -49,10 +50,20 @@ define(function() {
 	});
 
 	var alphanumericRegExp = /[a-zA-Z0-9]+/;
-	var numericRegExp = /[0-9]+/;
+	var numericRegExp = /[0-9]*[.]?[0-9]+[fL][U]/;
 	var wordRegExp = /^[a-zA-Z_][a-zA-Z0-9_]*/;
 
 	var states = {
+		readNumber: function(source, index, length, tokens) {
+			var end = index;
+			var match = remainingSource.match(numericRegExp);
+
+			if (match==null)
+				throw new Exception("No number found");
+
+			var value = match[0];
+
+		},
 		readString: function(source, index, length, tokens){
 			var end = index+1;
 
@@ -78,7 +89,7 @@ define(function() {
 
 			tokens.push({
 				type: keyword == null ? "T_IDENTIFIER" : keyword,
-				value: keyword == null ? match : undefined
+				value: keyword == null ? match[0] : undefined
 			});
 
 			return index + match[0].length;
