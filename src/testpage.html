@@ -4,5 +4,8 @@
 	<script data-main="scripts/main.js" type="text/javascript" src="scripts/require.js"></script>
 </head>
 <body>
+	<textarea rows='20' cols='120' id='code' data-bind='value: code'></textarea>
+	<input value="Tokenize" type='button' data-bind='click: tokenizeCode' />
+	<div data-bind='html: output'></div>
 </body>
 </html>

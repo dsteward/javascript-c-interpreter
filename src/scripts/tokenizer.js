@@ -50,12 +50,12 @@ define(function() {
 	});
 
 	var alphanumericRegExp = /[a-zA-Z0-9]+/;
-	var numericRegExp = /[0-9]*[.]?[0-9]+[fL][U]/;
+	var numericRegExp = /[0-9]*[.]?[0-9]+[fL]?/;
 	var wordRegExp = /^[a-zA-Z_][a-zA-Z0-9_]*/;
 
 	var states = {
 		readNumber: function(source, index, length, tokens) {
-			var end = index;
+			var remainingSource = source.slice(index, length);
 			var match = remainingSource.match(numericRegExp);
 
 			if (match==null)
@@ -63,6 +63,12 @@ define(function() {
 
 			var value = match[0];
 
+			tokens.push({
+				type: 'T_INTEGER',
+				value: value
+			});
+
+			return index + match[0].length;
 		},
 		readString: function(source, index, length, tokens){
 			var end = index+1;
@@ -119,6 +125,10 @@ define(function() {
 			
 			if (source[index] === '"')
 				return states.readString(source, index, length, tokens);
+
+			if (source[index].match(numericRegExp)) {
+				return states.readNumber(source, index, length, tokens);
+			}
 
 			return states.readSymbol(source, index, length, tokens);
 		},
