@@ -35,7 +35,8 @@ define(function() {
 
 	var keywords = {
 		'void': 'T_TYPE_VOID',
-		'int': 'T_TYPE_INT'
+		'int': 'T_TYPE_INT',
+		'char': 'T_TYPE_CHAR'
 	};
 
 	var sortedSymbols = symbols.map(function(item) {
